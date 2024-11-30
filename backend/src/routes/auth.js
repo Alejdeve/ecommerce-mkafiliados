@@ -1,0 +1,45 @@
+const express = require('express');
+const router = express.Router();
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const User = require('../models/User'); // Asegúrate de tener un modelo de User
+const auth = require('../middleware/auth');
+
+// Registro de usuario
+router.post('/register', async (req, res) => {
+    const { name, email, password } = req.body;
+
+    try {
+        let user = await User.findOne({ email });
+        if (user) {
+            return res.status(400).json({ msg: 'User already exists' });
+        }
+
+        user = new User({ name, email, password });
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(password, salt);
+
+        await user.save();
+
+        const payload = { user: { id: user.id } };
+
+        jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' }, (err, token) => {
+            if (err) throw err;
+            res.json({ token });
+        });
+    } catch (err) {
+        res.status(500).send('Server error');
+    }
+});
+
+// Ruta protegida de ejemplo
+router.get('/me', auth, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id).select('-password');
+        res.json(user);
+    } catch (err) {
+        res.status(500).send('Server error');
+    }
+});
+
+module.exports = router;
