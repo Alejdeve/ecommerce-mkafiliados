@@ -2,43 +2,69 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const User = require('../models/User'); // Asegúrate de tener un modelo de User
-const auth = require('../middleware/auth');
+const User = require('../models/User');
 
-// Registro de usuario
+// Registro
 router.post('/register', async (req, res) => {
-    const { name, email, password } = req.body;
-
     try {
-        let user = await User.findOne({ email });
+        let user = await User.findOne({ email: req.body.email });
         if (user) {
-            return res.status(400).json({ msg: 'User already exists' });
+            return res.status(400).json({ error: 'User already exists' }); // Cambio aquí
         }
 
-        user = new User({ name, email, password });
-        const salt = await bcrypt.genSalt(10);
-        user.password = await bcrypt.hash(password, salt);
-
+        user = new User(req.body);
         await user.save();
 
-        const payload = { user: { id: user.id } };
+        const token = jwt.sign(
+            { userId: user._id },
+            process.env.JWT_SECRET,
+            { expiresIn: '24h' }
+        );
 
-        jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' }, (err, token) => {
-            if (err) throw err;
-            res.json({ token });
+        res.status(201).json({
+            token,
+            user: {
+                _id: user._id,
+                email: user.email,
+                profile: user.profile
+            }
         });
     } catch (err) {
-        res.status(500).send('Server error');
+        console.error(err.message);
+        res.status(500).json({ error: err.message }); // Cambio aquí
     }
 });
 
-// Ruta protegida de ejemplo
-router.get('/me', auth, async (req, res) => {
+// Login
+router.post('/login', async (req, res) => {
     try {
-        const user = await User.findById(req.user.id).select('-password');
-        res.json(user);
+        const user = await User.findOne({ email: req.body.email });
+        if (!user) {
+            return res.status(401).json({ error: 'Invalid credentials' }); // Cambio aquí
+        }
+
+        const isMatch = await user.comparePassword(req.body.password);
+        if (!isMatch) {
+            return res.status(401).json({ error: 'Invalid credentials' }); // Cambio aquí
+        }
+
+        const token = jwt.sign(
+            { userId: user._id },
+            process.env.JWT_SECRET,
+            { expiresIn: '24h' }
+        );
+
+        res.json({
+            token,
+            user: {
+                _id: user._id,
+                email: user.email,
+                profile: user.profile
+            }
+        });
     } catch (err) {
-        res.status(500).send('Server error');
+        console.error(err.message);
+        res.status(500).json({ error: err.message }); // Cambio aquí
     }
 });
 
