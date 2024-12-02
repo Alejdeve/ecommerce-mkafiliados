@@ -53,6 +53,9 @@ Crear el archivo index.js en backend/src:
 </code></pre>
 </div>
 <br>
+Crear el archivo index.js en backend/src:
+<div style="background-color: #f0f0f0; padding: 10px; border: 1px solid #ddd;">
+<pre><code class="javascript">
 js
 const express = require('express');
 const mongoose = require('mongoose');
@@ -81,6 +84,9 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
+</code></pre>
+</div>
+<br>
 Razón: Express es un framework minimalista para Node.jsque facilita la creación de servidores HTTP y la gestión de rutas. MongoDB es una base de datos NoSQL escalable y flexible que se integra fácilmente con Node.jsa través de Mongoose.
 
 3. Implementar Autenticación JWT
@@ -89,11 +95,15 @@ Objetivo: Implementar autenticación segura utilizando JSON Web Tokens (JWT) par
 Pasos:
 
 Instalar dependencias JWT:
-
+<div style="background-color: #f0f0f0; padding: 10px; border: 1px solid #ddd;">
+<pre><code class="powershell">
 sh
 npm install jsonwebtoken bcryptjs
+</code></pre>
+</div>
 Crear middleware de autenticación en backend/src/middleware/auth.js:
-
+<div style="background-color: #f0f0f0; padding: 10px; border: 1px solid #ddd;">
+<pre><code class="powershell">
 js
 const jwt = require('jsonwebtoken');
 
@@ -113,8 +123,12 @@ const auth = (req, res, next) => {
 };
 
 module.exports = auth;
-Añadir rutas de autenticación en backend/src/routes/auth.js:
+</code></pre>
+</div>
 
+Añadir rutas de autenticación en backend/src/routes/auth.js:
+<div style="background-color: #f0f0f0; padding: 10px; border: 1px solid #ddd;">
+<pre><code class="powershell">
 js
 const express = require('express');
 const router = express.Router();
@@ -161,11 +175,16 @@ router.get('/me', auth, async (req, res) => {
 });
 
 module.exports = router;
+</code></pre>
+</div>
 Incluir las rutas en el servidor Express en index.js:
-
+<div style="background-color: #f0f0f0; padding: 10px; border: 1px solid #ddd;">
+<pre><code class="powershell">
 js
 const authRoutes = require('./routes/auth');
 app.use('/api/auth', authRoutes);
+</code></pre>
+</div>
 Razón: JWT ofrece una forma segura de transmitir información entre el cliente y el servidor mediante tokens firmados, asegurando que solo los usuarios autenticados puedan acceder a rutas protegidas.
 
 4. Configurar Redux y React Query
@@ -174,12 +193,16 @@ Objetivo: Configurar Redux para la gestión del estado global y React Query para
 Pasos:
 
 Instalar Redux y React Query en el frontend:
-
+<div style="background-color: #f0f0f0; padding: 10px; border: 1px solid #ddd;">
+<pre><code class="powershell">
 sh
 cd ecommerce-infantil-frontend
 npm install @reduxjs/toolkit react-redux react-query
+</code></pre>
+</div>
 Crear y configurar el store.js en frontend/src:
-
+<div style="background-color: #f0f0f0; padding: 10px; border: 1px solid #ddd;">
+<pre><code class="powershell">
 js
 import { configureStore } from '@reduxjs/toolkit';
 
@@ -188,8 +211,11 @@ export const store = configureStore({
         // Añadir tus reducers aquí
     },
 });
+</code></pre>
+</div>
 Configurar Provider en pages/_app.js:
-
+<div style="background-color: #f0f0f0; padding: 10px; border: 1px solid #ddd;">
+<pre><code class="powershell">
 js
 import { Provider } from 'react-redux';
 import { store } from '../store';
@@ -208,6 +234,8 @@ function MyApp({ Component, pageProps }) {
 }
 
 export default MyApp;
+</code></pre>
+</div>
 Razón: Redux facilita la gestión del estado global de la aplicación, permitiendo un flujo de datos predecible. React Query simplifica la obtención, almacenamiento en caché y sincronización de datos del servidor, mejorando la eficiencia de las consultas de datos.
 
-Con esta guía, podrás estudiar y comprender cada paso que hemos realizado durante la primera semana de la Fase 1 de tu proyecto. Si necesitas más detalles o tienes alguna otra pregunta, ¡estaré encantado de ayudarte! 😊🚀246810121416
+Con esta guía, podrás estudiar y comprender cada paso que hemos realizado durante la primera semana de la Fase 1 del proyecto. 
